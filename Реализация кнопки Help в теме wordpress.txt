@@ -1,0 +1,159 @@
+## Реализация кнопки "?" с модальным окном для темы WordPress:
+
+1. В файл `header.php` добавьте этот HTML-код (он уже есть в вашем коде, но для полноты привожу его снова):
+
+```html
+<button class="help-button">?</button>
+<div id="aboutModal" class="about-modal" aria-hidden="true">
+    <div class="about-modal-content">
+        <button class="about-close" aria-label="Закрыть">&times;</button>
+        <h2>О приложении</h2>
+        <p>Playbook - это внутренняя база знаний компании. Здесь вы можете найти документацию, руководства и полезные материалы.</p>
+        <p>Версия: 1.0</p>
+    </div>
+</div>
+```
+
+2. В файл `style.css` добавьте/обновите эти стили (они уже присутствуют в вашем коде):
+
+```css
+/* Стили для кнопки помощи */
+.help-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #0073aa;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 15px;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.help-button:hover,
+.help-button:focus {
+    background-color: #005177;
+    outline: none;
+}
+
+/* Стили для модального окна */
+.about-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.about-modal.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.about-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.about-modal.is-visible .about-modal-content {
+    transform: translateY(0);
+}
+
+.about-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.about-modal h2 {
+    color: #0073aa;
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.about-modal p {
+    margin-bottom: 1em;
+    line-height: 1.5;
+}
+
+.about-modal p:last-child {
+    margin-bottom: 0;
+}
+```
+
+3. В файл `main.js` добавьте этот JavaScript (убедитесь, что он заменяет дублирующийся код):
+
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+    const helpButton = document.querySelector('.help-button');
+    const modal = document.getElementById('aboutModal');
+    const closeButton = document.querySelector('.about-close');
+    
+    if (!helpButton || !modal || !closeButton) return;
+    
+    // Функция для открытия модального окна
+    function openModal() {
+        modal.classList.add('is-visible');
+        document.body.style.overflow = 'hidden';
+        closeButton.focus();
+    }
+    
+    // Функция для закрытия модального окна
+    function closeModal() {
+        modal.classList.remove('is-visible');
+        document.body.style.overflow = '';
+        helpButton.focus();
+    }
+    
+    // Обработчики событий
+    helpButton.addEventListener('click', openModal);
+    closeButton.addEventListener('click', closeModal);
+    
+    // Закрытие при клике вне окна
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-visible')) {
+            closeModal();
+        }
+    });
+});
+```
+
+Эта реализация включает:
+1. Круглую кнопку "?" в шапке сайта
+2. Модальное окно с информацией о приложении
+3. Плавные анимации открытия/закрытия
+4. Возможность закрытия по клику вне окна или клавише ESC
+5. Правильное управление фокусом для доступности
+6. Адаптивные стили
+
